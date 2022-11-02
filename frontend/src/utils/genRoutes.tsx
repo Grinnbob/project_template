@@ -25,7 +25,8 @@ export const genRoutes = (routes: IRoute[]) => {
 
                     const userHasRequiredRole =
                         me && x.roles.includes(me.role) ? true : false
-                    if (isAuthenticated && !userHasRequiredRole) {
+
+                    if (!userHasRequiredRole) {
                         return (
                             <Route
                                 key={x.path}
