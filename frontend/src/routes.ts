@@ -1,5 +1,7 @@
 import React from "react"
 import { UserRole } from "./models/IUser"
+import AccessDenied from "./pages/AccessDenied"
+import Home from "./pages/Home"
 import LoginPage from "./pages/LoginPage"
 import SignupPage from "./pages/SignupPage"
 
@@ -10,7 +12,6 @@ export interface IRoute {
     component: React.FC
     isPrivate: boolean
     roles: UserRole[]
-    class?: string
 }
 
 const createRoutes = (
@@ -25,7 +26,6 @@ const createRoutes = (
             component: routeParam.component,
             roles: [...routeParam.roles, ...defaultRoles],
             isPrivate: routeParam.isPrivate || defaultIsPrivate,
-            class: routeParam.class,
         })
         return carry
     }, [] as IRoute[])
@@ -35,17 +35,26 @@ const PublicRoutes: IRoute[] = createRoutes("/", [], false, [
     {
         path: "/login",
         component: LoginPage,
-        isPrivate: false,
         roles: [],
-        class: "login-page",
     },
     {
         path: "/signup",
         component: SignupPage,
-        isPrivate: false,
         roles: [],
-        class: "login-page",
+    },
+    {
+        path: "/access_denied",
+        component: AccessDenied,
+        roles: [],
     },
 ])
 
-export const RoutesList: IRoute[] = [...PublicRoutes]
+const PrivateRoutes: IRoute[] = createRoutes("/", [], true, [
+    {
+        path: "/home",
+        component: Home,
+        roles: [],
+    },
+])
+
+export const RoutesList: IRoute[] = [...PublicRoutes, ...PrivateRoutes]

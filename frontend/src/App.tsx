@@ -16,7 +16,7 @@ const App: React.FC = () => {
                         <Link to="/signup">Register</Link>
                     </li>
                     <li>
-                        <Link to="/">Main</Link>
+                        <Link to="/home">Home</Link>
                     </li>
                 </ul>
             </nav>

@@ -1,7 +1,7 @@
 import React, { FC } from "react"
 
 const AccessDenied: FC = () => {
-    return <div>access_denied</div>
+    return <div>Home</div>
 }
 
 export default AccessDenied

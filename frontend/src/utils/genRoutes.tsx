@@ -1,7 +1,5 @@
 import React from "react"
-import { Route, Routes } from "react-router-dom"
-import AccessDenied from "../pages/AccessDenied"
-import LoginPage from "../pages/LoginP"
+import { Navigate, Route, Routes } from "react-router-dom"
 import { useTypedSelector } from "../hooks/useTypedSelector"
 import { IRoute } from "../routes"
 
@@ -9,41 +7,40 @@ export const genRoutes = (routes: IRoute[]) => {
     const me = useTypedSelector((state) => state.auth.me)
     const token = useTypedSelector((state) => state.auth.token)
     const isAuthenticated = !!token
+
     return (
         <Routes>
-            {routes.map((x) => {
-                if (x.isPrivate) {
-                    if (!isAuthenticated) {
+            {isAuthenticated &&
+                routes
+                    .filter((route) =>
+                        route.isPrivate &&
+                        me &&
+                        (route.roles.length === 0 ||
+                            route.roles.includes(me.role))
+                            ? true
+                            : false
+                    )
+                    .map((route) => {
                         return (
                             <Route
-                                key={x.path}
-                                path={"/login"}
-                                element={<LoginPage />}
+                                key={route.path}
+                                path={route.path}
+                                element={<route.component />}
                             />
                         )
-                    }
-
-                    const userHasRequiredRole =
-                        me && x.roles.includes(me.role) ? true : false
-
-                    if (!userHasRequiredRole) {
-                        return (
-                            <Route
-                                key={x.path}
-                                path={x.path}
-                                element={<AccessDenied />}
-                            />
-                        )
-                    }
-                }
-                return (
-                    <Route
-                        key={x.path}
-                        path={x.path}
-                        element={<x.component />}
-                    />
-                )
-            })}
+                    })}
+            {routes
+                .filter((route) => !route.isPrivate)
+                .map((route) => {
+                    return (
+                        <Route
+                            key={route.path}
+                            path={route.path}
+                            element={<route.component />}
+                        />
+                    )
+                })}
+            <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
     )
 }

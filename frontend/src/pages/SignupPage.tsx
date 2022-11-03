@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import { Container, Grid, Box, Typography, Stack } from "@mui/material"
 import LoadingButton from "@mui/lab/LoadingButton"
 import { FC } from "react"
@@ -9,7 +9,10 @@ import FormInput from "../components/FormInput"
 import { ReactComponent as GoogleLogo } from "../assets/images/google.svg"
 import { ReactComponent as GitHubLogo } from "../assets/images/github.svg"
 import { LinkItem, OauthMuiLink } from "./LoginPage"
-import AuthService from "../services/AuthService"
+import { useAppDispatch } from "../hooks/useAppDispatch"
+import { signup } from "../store/action-creators/authActions"
+import { useTypedSelector } from "../hooks/useTypedSelector"
+import { useNavigate } from "react-router-dom"
 
 // 👇 SignUp Schema with Zod
 const signupSchema = object({
@@ -33,6 +36,13 @@ const signupSchema = object({
 type ISignUp = TypeOf<typeof signupSchema>
 
 const SignupPage: FC = () => {
+    const dispatch = useAppDispatch()
+    const navigate = useNavigate()
+    const { me, error, isLoading, token } = useTypedSelector(
+        (state) => state.auth
+    )
+    const [isTypedLogin, setIsTypedLogin] = useState(false)
+
     // 👇 Default Values
     const defaultValues: ISignUp = {
         name: "",
@@ -49,9 +59,16 @@ const SignupPage: FC = () => {
 
     // 👇 Form Handler
     const onSubmitHandler: SubmitHandler<ISignUp> = async (values: ISignUp) => {
-        console.log(JSON.stringify(values, null, 4))
-        await AuthService.signup(values.email, values.password)
+        dispatch(signup(values))
+        setIsTypedLogin(true)
     }
+
+    useEffect(() => {
+        if (isTypedLogin && !error && me && token) {
+            setIsTypedLogin(false)
+            navigate("/home")
+        }
+    }, [me, error, token, isTypedLogin])
 
     // 👇 Returned JSX
     return (
@@ -62,6 +79,8 @@ const SignupPage: FC = () => {
                 backgroundColor: { xs: "#fff", md: "#f4f4f4" },
             }}
         >
+            {isLoading && <h1>Идет загрузка...</h1>}
+            {error && <h1>Произошла ошибка при загрузке</h1>}
             <Grid
                 container
                 justifyContent="center"

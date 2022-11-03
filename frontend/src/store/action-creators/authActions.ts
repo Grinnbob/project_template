@@ -3,13 +3,14 @@ import { IAuthRequest } from "../../models/request/AuthRequest"
 import AuthService from "../../services/AuthService"
 
 export const login = createAsyncThunk(
-    "auth",
+    "auth/login",
     async (payload: IAuthRequest, thunkAPI) => {
         try {
             const response = await AuthService.login(
                 payload.email,
                 payload.password
             )
+
             return response
         } catch (e) {
             return thunkAPI.rejectWithValue("Login error")
@@ -18,21 +19,25 @@ export const login = createAsyncThunk(
 )
 
 export const signup = createAsyncThunk(
-    "auth",
+    "auth/signup",
     async (payload: IAuthRequest, thunkAPI) => {
         try {
             const response = await AuthService.signup(
                 payload.email,
                 payload.password
             )
-            return response
+
+            // if (!response || response.status == 400)
+            //     throw new Error("No response")
+
+            return response.data
         } catch (e) {
             return thunkAPI.rejectWithValue("Signup error")
         }
     }
 )
 
-export const logout = createAsyncThunk("auth", async (_, thunkAPI) => {
+export const logout = createAsyncThunk("auth/logout", async (_, thunkAPI) => {
     try {
         const response = await AuthService.logout()
         return response

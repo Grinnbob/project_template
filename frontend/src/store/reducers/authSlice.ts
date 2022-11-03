@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit"
+import { IAuthResponse } from "../../models/response/AuthResponse"
 import { IAuth } from "../../types/authToken"
 import { TokenStorage } from "../../utils/tokenStorage"
 import { login, logout, signup } from "../action-creators/authActions"
@@ -36,39 +37,71 @@ const authSlice = createSlice({
     },
     extraReducers: {
         // success
-        [login.fulfilled.type]: (state, action: PayloadAction<IAuth>) => {
-            state.isLoading = false
-            state.me = action.payload.me
-            state.error = ""
+        [login.fulfilled.type]: (
+            state,
+            action: PayloadAction<IAuthResponse>
+        ) => {
+            if (
+                action.payload &&
+                action.payload.data &&
+                action.payload.data.user &&
+                action.payload.data.token
+            ) {
+                state.me = action.payload.data.user
+                state.error = null
+                state.token = action.payload.data.token
 
-            tokenStorage.setToken(action.payload.token)
-            localStorage.setItem("me", JSON.stringify(action.payload.me))
+                tokenStorage.setToken(action.payload.data.token)
+                localStorage.setItem(
+                    "me",
+                    JSON.stringify(action.payload.data.user)
+                )
+            } else {
+                console.log("Empty auth response")
+            }
+            state.isLoading = false
         },
         // loading
         [login.pending.type]: (state) => {
             state.isLoading = true
         },
         // error
-        [login.fulfilled.type]: (state, action: PayloadAction<string>) => {
+        [login.rejected.type]: (state, action: PayloadAction<string>) => {
             state.isLoading = false
             state.error = action.payload
         },
 
         // success
-        [signup.fulfilled.type]: (state, action: PayloadAction<IAuth>) => {
-            state.isLoading = false
-            state.me = action.payload.me
-            state.error = ""
+        [signup.fulfilled.type]: (
+            state,
+            action: PayloadAction<IAuthResponse>
+        ) => {
+            if (
+                action.payload &&
+                action.payload.data &&
+                action.payload.data.user &&
+                action.payload.data.token
+            ) {
+                state.me = action.payload.data.user
+                state.error = null
+                state.token = action.payload.data.token
 
-            tokenStorage.setToken(action.payload.token)
-            localStorage.setItem("me", JSON.stringify(action.payload.me))
+                tokenStorage.setToken(action.payload.data.token)
+                localStorage.setItem(
+                    "me",
+                    JSON.stringify(action.payload.data.user)
+                )
+            } else {
+                console.log("Empty auth response")
+            }
+            state.isLoading = false
         },
         // loading
         [signup.pending.type]: (state) => {
             state.isLoading = true
         },
         // error
-        [signup.fulfilled.type]: (state, action: PayloadAction<string>) => {
+        [signup.rejected.type]: (state, action: PayloadAction<string>) => {
             state.isLoading = false
             state.error = action.payload
         },
@@ -77,7 +110,9 @@ const authSlice = createSlice({
         [logout.fulfilled.type]: (state) => {
             state.isLoading = false
             state.me = null
-            state.error = ""
+            state.error = null
+
+            console.log("--- logout ---")
 
             tokenStorage.removeToken()
             localStorage.removeItem("me")
@@ -87,7 +122,7 @@ const authSlice = createSlice({
             state.isLoading = true
         },
         // error
-        [logout.fulfilled.type]: (state, action: PayloadAction<string>) => {
+        [logout.rejected.type]: (state, action: PayloadAction<string>) => {
             state.isLoading = false
             state.error = action.payload
         },

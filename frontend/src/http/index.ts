@@ -1,4 +1,6 @@
 import axios, { AxiosRequestConfig } from "axios"
+import { store } from ".."
+import { logout } from "../store/action-creators/authActions"
 import { TokenStorage } from "../utils/tokenStorage"
 
 const tokenStorage = new TokenStorage()
@@ -29,10 +31,11 @@ $api.interceptors.response.use(
         // const originalRequest = error.config
         if (error.response.status == 401) {
             try {
-                console.log("Anauthorized!") // TODO: add toast here
+                store.dispatch(logout())
+                console.log("Anauthorized!") // TODO: add toast here?
                 // return $api.request(originalRequest)
             } catch (e) {
-                console.log("User unauthorized!")
+                console.log("User unauthorized!", e)
             }
         }
     }

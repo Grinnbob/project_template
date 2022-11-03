@@ -25,7 +25,7 @@ const userSlice = createSlice({
             state.loading = true
         },
         // error
-        [getUsers.fulfilled.type]: (state, action: PayloadAction<string>) => {
+        [getUsers.rejected.type]: (state, action: PayloadAction<string>) => {
             state.loading = false
             state.error = action.payload
         },

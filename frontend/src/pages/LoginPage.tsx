@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import {
     Container,
     Grid,
@@ -12,7 +12,7 @@ import {
 import LoadingButton from "@mui/lab/LoadingButton"
 import { FC } from "react"
 import { useForm, SubmitHandler, FormProvider } from "react-hook-form"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { literal, object, string, TypeOf } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import FormInput from "../components/FormInput"
@@ -21,6 +21,7 @@ import { ReactComponent as GitHubLogo } from "../assets/images/github.svg"
 import styled from "@emotion/styled"
 import { useAppDispatch } from "../hooks/useAppDispatch"
 import { login } from "../store/action-creators/authActions"
+import { useTypedSelector } from "../hooks/useTypedSelector"
 
 // https://codevoweb.com/react-material-ui-and-react-hook-form-html-forms/
 // https://github.com/wpcodevo/Blog_MUI_React-hook-form
@@ -70,7 +71,12 @@ const loginSchema = object({
 type ILogin = TypeOf<typeof loginSchema>
 
 const LoginPage: FC = () => {
+    const { me, error, isLoading, token } = useTypedSelector(
+        (state) => state.auth
+    ) // TODO: add toast
     const dispatch = useAppDispatch()
+    const navigate = useNavigate()
+    const [isTypedLogin, setIsTypedLogin] = useState(false)
 
     // 👇 Default Values
     const defaultValues: ILogin = {
@@ -86,9 +92,16 @@ const LoginPage: FC = () => {
 
     // 👇 Submit Handler
     const onSubmitHandler: SubmitHandler<ILogin> = async (values: ILogin) => {
-        console.log(values)
         dispatch(login(values))
+        setIsTypedLogin(true)
     }
+
+    useEffect(() => {
+        if (isTypedLogin && !error && me && token) {
+            setIsTypedLogin(false)
+            navigate("/home")
+        }
+    }, [me, error, token, isTypedLogin])
 
     // 👇 JSX to be rendered
     return (
@@ -99,6 +112,8 @@ const LoginPage: FC = () => {
                 backgroundColor: { xs: "#fff", md: "#f4f4f4" },
             }}
         >
+            {isLoading && <h1>Идет загрузка...</h1>}
+            {error && <h1>Произошла ошибка при загрузке</h1>}
             <Grid
                 container
                 justifyContent="center"

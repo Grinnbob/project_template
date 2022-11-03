@@ -9,7 +9,7 @@ import { setupStore } from "./store"
 import { InversifyContextProvider } from "./hooks/useInjection"
 import { container } from "./inversify"
 
-const store = setupStore()
+export const store = setupStore()
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement)
 root.render(

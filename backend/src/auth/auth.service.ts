@@ -19,7 +19,7 @@ export class AuthService {
 
   async login(userDto: CreateUserDto) {
     const user = await this.validateUser(userDto);
-    return this.generateToken(user);
+    return { ...this.generateToken(user), user };
   }
 
   async registration(userDto: CreateUserDto) {
@@ -37,7 +37,7 @@ export class AuthService {
       password: hashPassword,
     });
 
-    return this.generateToken(user);
+    return { ...this.generateToken(user), user };
   }
 
   private generateToken(user: User) {
@@ -49,13 +49,15 @@ export class AuthService {
 
   private async validateUser(userDto: CreateUserDto) {
     const user = await this.userService.getUserByEmail(userDto.email);
+    if (!user) throw new UnauthorizedException({ message: 'Wrong email' });
+
     const passwordEquals = await bcrypt.compare(
       userDto.password,
       user.password,
     );
+    if (!passwordEquals)
+      throw new UnauthorizedException({ message: 'Wrong password' });
 
-    if (user && passwordEquals) return user;
-
-    throw new UnauthorizedException({ message: 'Wrong email or password' });
+    return user;
   }
 }
