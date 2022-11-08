@@ -1,9 +1,16 @@
-import React from "react"
-import { UserRole } from "./models/IUser"
-import AccessDenied from "./pages/AccessDenied"
-import Home from "./pages/Home"
+import React, { lazy } from "react"
+import { UserRole } from "./models/Roles"
+
 import LoginPage from "./pages/LoginPage"
 import SignupPage from "./pages/SignupPage"
+
+const AccessDeniedPage = lazy(() => import("./pages/AccessDeniedPage"))
+const Home = lazy(() => import("./pages/Home"))
+const NotFoundPage = lazy(() => import("./pages/NotFoundPage"))
+
+const VacancyCreatePage = lazy(() =>
+    import("./pages/recruiter/VacancyCreatePage")
+)
 
 type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 
@@ -44,16 +51,26 @@ const PublicRoutes: IRoute[] = createRoutes("/", [], false, [
     },
     {
         path: "/access_denied",
-        component: AccessDenied,
+        component: AccessDeniedPage,
+        roles: [],
+    },
+    {
+        path: "/404",
+        component: NotFoundPage,
         roles: [],
     },
 ])
 
-const PrivateRoutes: IRoute[] = createRoutes("/", [], true, [
+const PrivateRoutes: IRoute[] = createRoutes("/", [UserRole.admin], true, [
     {
         path: "/home",
         component: Home,
         roles: [],
+    },
+    {
+        path: "/vacancy/create",
+        component: VacancyCreatePage,
+        roles: [UserRole.recruiter, UserRole.admin],
     },
 ])
 

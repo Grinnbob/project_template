@@ -6,8 +6,14 @@ module.exports = {
       'roles',
       [
         {
-          value: 'USER',
-          description: 'user',
+          value: 'RECRUITER',
+          description: 'recruiter',
+          createdAt: creationDate,
+          updatedAt: creationDate,
+        },
+        {
+          value: 'CANDIDATE',
+          description: 'candidate',
           createdAt: creationDate,
           updatedAt: creationDate,
         },

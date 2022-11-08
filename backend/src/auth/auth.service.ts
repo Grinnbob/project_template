@@ -19,6 +19,7 @@ export class AuthService {
 
   async login(userDto: CreateUserDto) {
     const user = await this.validateUser(userDto);
+    delete user.password;
     return { ...this.generateToken(user), user };
   }
 
@@ -37,6 +38,7 @@ export class AuthService {
       password: hashPassword,
     });
 
+    delete user.password;
     return { ...this.generateToken(user), user };
   }
 

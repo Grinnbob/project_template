@@ -18,6 +18,9 @@ const App: React.FC = () => {
                     <li>
                         <Link to="/home">Home</Link>
                     </li>
+                    <li>
+                        <Link to="/vacancy/create">Create vacancy</Link>
+                    </li>
                 </ul>
             </nav>
             {genRoutes(RoutesList)}

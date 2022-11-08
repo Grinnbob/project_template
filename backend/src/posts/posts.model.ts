@@ -15,7 +15,7 @@ interface PostCreateAttrs {
   image: string;
 }
 
-@Table({ tableName: 'posts`' })
+@Table({ tableName: 'posts' })
 export class Post extends Model<Post, PostCreateAttrs> {
   @Column({
     type: DataType.INTEGER,

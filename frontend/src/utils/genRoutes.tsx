@@ -12,15 +12,24 @@ export const genRoutes = (routes: IRoute[]) => {
         <Routes>
             {isAuthenticated &&
                 routes
-                    .filter((route) =>
-                        route.isPrivate &&
-                        me &&
-                        (route.roles.length === 0 ||
-                            route.roles.includes(me.role))
-                            ? true
-                            : false
-                    )
+                    .filter((route) => route.isPrivate)
                     .map((route) => {
+                        const isHasAccess =
+                            me &&
+                            (route.roles.length === 0 ||
+                                route.roles.includes(me.role))
+                                ? true
+                                : false
+
+                        if (!isHasAccess)
+                            return (
+                                <Route
+                                    key={route.path}
+                                    path={route.path}
+                                    element={<Navigate to="/access_denied" />}
+                                />
+                            )
+
                         return (
                             <Route
                                 key={route.path}

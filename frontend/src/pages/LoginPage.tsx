@@ -94,6 +94,7 @@ const LoginPage: FC = () => {
     const onSubmitHandler: SubmitHandler<ILogin> = async (values: ILogin) => {
         dispatch(login(values))
         setIsTypedLogin(true)
+        console.log(me)
     }
 
     useEffect(() => {
@@ -112,8 +113,6 @@ const LoginPage: FC = () => {
                 backgroundColor: { xs: "#fff", md: "#f4f4f4" },
             }}
         >
-            {isLoading && <h1>Идет загрузка...</h1>}
-            {error && <h1>Произошла ошибка при загрузке</h1>}
             <Grid
                 container
                 justifyContent="center"
